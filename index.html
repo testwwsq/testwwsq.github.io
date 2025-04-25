@@ -1,29 +1,28 @@
-# testwwsq.github.io
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>打地鼠小游戏</title>
+  <title>打地鼠 - 有难度的版本！</title>
   <style>
     body {
       text-align: center;
       font-family: sans-serif;
-      background: #f0f0f0;
+      background: #f8f8f8;
     }
     h1 {
-      margin-top: 30px;
+      margin-top: 20px;
     }
     .game {
       display: grid;
       grid-template-columns: repeat(3, 100px);
       grid-gap: 10px;
       justify-content: center;
-      margin-top: 30px;
+      margin: 20px auto;
     }
     .hole {
       width: 100px;
       height: 100px;
-      background: #888;
+      background: #aaa;
       border-radius: 10px;
       position: relative;
       cursor: pointer;
@@ -37,41 +36,96 @@
       top: 20px;
       left: 20px;
     }
+    .controls {
+      margin-top: 10px;
+    }
+    select, button {
+      padding: 5px 10px;
+      font-size: 16px;
+      margin: 0 5px;
+    }
   </style>
 </head>
 <body>
-  <h1>打地鼠小游戏</h1>
+  <h1>🎯 打地鼠：挑战你的反应力！</h1>
+  <div class="controls">
+    <label for="level">选择难度：</label>
+    <select id="level">
+      <option value="easy">简单</option>
+      <option value="medium" selected>普通</option>
+      <option value="hard">困难</option>
+    </select>
+    <button onclick="startGame()">开始游戏</button>
+    <button onclick="resetGame()">重置</button>
+  </div>
   <p>得分：<span id="score">0</span></p>
   <div class="game" id="game"></div>
 
   <script>
     const game = document.getElementById('game');
     const scoreEl = document.getElementById('score');
-    let score = 0;
+    const levelSelect = document.getElementById('level');
 
-    // 创建9个洞
-    for (let i = 0; i < 9; i++) {
-      const hole = document.createElement('div');
-      hole.classList.add('hole');
-      game.appendChild(hole);
+    let score = 0;
+    let moleTimer = null;
+    let moleSpeed = 1000;
+
+    function createBoard() {
+      game.innerHTML = '';
+      for (let i = 0; i < 9; i++) {
+        const hole = document.createElement('div');
+        hole.classList.add('hole');
+        game.appendChild(hole);
+      }
     }
 
-    function randomMole() {
+    function spawnMole() {
       const holes = document.querySelectorAll('.hole');
       holes.forEach(h => h.innerHTML = '');
-
       const index = Math.floor(Math.random() * holes.length);
       const mole = document.createElement('div');
       mole.classList.add('mole');
       mole.onclick = () => {
         score++;
         scoreEl.textContent = score;
+
+        // 加速机制：每5分加快0.1秒
+        if (score % 5 === 0 && moleSpeed > 300) {
+          moleSpeed -= 100;
+          restartMole();
+        }
       };
       holes[index].appendChild(mole);
     }
 
-    // 每秒随机出现一个地鼠
-    setInterval(randomMole, 1000);
+    function startGame() {
+      resetGame();
+      setDifficulty();
+      createBoard();
+      moleTimer = setInterval(spawnMole, moleSpeed);
+    }
+
+    function restartMole() {
+      clearInterval(moleTimer);
+      moleTimer = setInterval(spawnMole, moleSpeed);
+    }
+
+    function resetGame() {
+      clearInterval(moleTimer);
+      score = 0;
+      scoreEl.textContent = score;
+      createBoard();
+    }
+
+    function setDifficulty() {
+      const level = levelSelect.value;
+      if (level === 'easy') moleSpeed = 1200;
+      else if (level === 'medium') moleSpeed = 900;
+      else if (level === 'hard') moleSpeed = 600;
+    }
+
+    // 初始化
+    createBoard();
   </script>
 </body>
 </html>
