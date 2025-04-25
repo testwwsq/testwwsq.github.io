@@ -1,1 +1,77 @@
 # testwwsq.github.io
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>打地鼠小游戏</title>
+  <style>
+    body {
+      text-align: center;
+      font-family: sans-serif;
+      background: #f0f0f0;
+    }
+    h1 {
+      margin-top: 30px;
+    }
+    .game {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-gap: 10px;
+      justify-content: center;
+      margin-top: 30px;
+    }
+    .hole {
+      width: 100px;
+      height: 100px;
+      background: #888;
+      border-radius: 10px;
+      position: relative;
+      cursor: pointer;
+    }
+    .mole {
+      width: 60px;
+      height: 60px;
+      background: brown;
+      border-radius: 50%;
+      position: absolute;
+      top: 20px;
+      left: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>打地鼠小游戏</h1>
+  <p>得分：<span id="score">0</span></p>
+  <div class="game" id="game"></div>
+
+  <script>
+    const game = document.getElementById('game');
+    const scoreEl = document.getElementById('score');
+    let score = 0;
+
+    // 创建9个洞
+    for (let i = 0; i < 9; i++) {
+      const hole = document.createElement('div');
+      hole.classList.add('hole');
+      game.appendChild(hole);
+    }
+
+    function randomMole() {
+      const holes = document.querySelectorAll('.hole');
+      holes.forEach(h => h.innerHTML = '');
+
+      const index = Math.floor(Math.random() * holes.length);
+      const mole = document.createElement('div');
+      mole.classList.add('mole');
+      mole.onclick = () => {
+        score++;
+        scoreEl.textContent = score;
+      };
+      holes[index].appendChild(mole);
+    }
+
+    // 每秒随机出现一个地鼠
+    setInterval(randomMole, 1000);
+  </script>
+</body>
+</html>
